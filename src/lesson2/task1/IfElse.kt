@@ -3,8 +3,8 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
-import kotlin.math.max
-import kotlin.math.sqrt
+import kotlin.math.*
+
 
 /**
  * Пример
@@ -63,7 +63,18 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String {
+    if (age <= 0 || age >= 200) return "Ошибка"
+    val text: String = when {
+        //1 -- год 2, 3, 4 -- года 5, 6, 7, 8, 9, 10, 11, 12, и все остальные "-надцать",
+        // а также 20 -- лет 21 -- год 22, 23, 24 -- года и т.д.
+        age % 100 in 11..20 -> "лет"
+        age % 10 == 1 -> "год"
+        age % 10 in 2..4 -> "года"
+        else -> "лет"
+    }
+    return "$age $text"
+}
 
 /**
  * Простая
@@ -76,7 +87,19 @@ fun timeForHalfWay(
     t1: Double, v1: Double,
     t2: Double, v2: Double,
     t3: Double, v3: Double
-): Double = TODO()
+): Double {
+    val part1Km: Double = t1 * v1
+    val part2Km: Double = t2 * v2
+    val part3Km: Double = t3 * v3
+    val halfWayKm: Double = (part1Km + part2Km + part3Km) / 2.0
+    return when {
+        part1Km >= halfWayKm -> halfWayKm / v1
+        part1Km + part2Km >= halfWayKm -> t1 + (halfWayKm - part1Km) / v2
+        else -> t1 + t2 + (halfWayKm - part1Km - part2Km) / v3
+    }
+
+
+}
 
 /**
  * Простая
@@ -91,7 +114,19 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int = TODO()
+): Int {
+    var rook1 = false
+    var rook2 = false
+    if (rookX1 == kingX || rookY1 == kingY) rook1 = true
+    if (rookX2 == kingX || rookY2 == kingY) rook2 = true
+    return when {
+        rook1 && rook2 -> 3
+        rook2 -> 2
+        rook1 -> 1
+        else -> 0
+    }
+
+}
 
 /**
  * Простая
@@ -107,7 +142,18 @@ fun rookOrBishopThreatens(
     kingX: Int, kingY: Int,
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
-): Int = TODO()
+): Int {
+    var rook = false
+    var bishop = false
+    if (rookX == kingX || rookY == kingY) rook = true
+    if ((bishopX - bishopY == kingX - kingY) || (bishopX + bishopY == kingX + kingY)) bishop = true
+    return when {
+        rook && bishop -> 3
+        bishop -> 2
+        rook -> 1
+        else -> 0
+    }
+}
 
 /**
  * Простая
@@ -117,7 +163,28 @@ fun rookOrBishopThreatens(
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+
+    val otherSide: Double
+    val maxSide: Double = max(a, max(b, c))
+    val minSide: Double = min(a, min(b, c))
+    otherSide = a + b + c - maxSide - minSide
+    return if (
+        (a < b + c) && (a > b - c) &&
+        (b < a + c) && (b > a - c) && //Проверка на существующий треугольник
+        (c < a + b) && (c > a - b)
+    )
+        when {
+            maxSide.pow(2) == minSide.pow(2) + otherSide.pow(2) -> 1
+            //если Квадрат Найбольшей стороны(Гипотенуза) равен сумме квадратов двух других то это прямоуголый треугольник(1)
+            maxSide.pow(2) > minSide.pow(2) + otherSide.pow(2) -> 2
+            //если Квадрат Найбольшей стороны БОЛЬШЕ сумме квадратов двух других то это ТУПОУГОЛЬНЫЙ треугольник(2)
+            else -> 0 //В других случаях это ОСТРОУГОЛЬНЫЙ треугольник(0)
+        }
+    else -1 //Проверка на существующий треугольник не пройдена(-1)
+
+
+}
 
 /**
  * Средняя
@@ -127,4 +194,14 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    return if ((a > c && a > d) || (b < c && b < d)) -1
+    else {
+        val maxPoint = max(b, d)
+        val minPoint = min(a, c)
+        val fullLength = maxPoint - minPoint
+        val abL = b - a
+        val cdL = d - c
+        abL + cdL - fullLength // Если результат < 0 -> Отрезки не пересекаются.Это можно использовать вместо  if ((a > c && a > d) || (b < c && b < d)) -1
+    }
+}
